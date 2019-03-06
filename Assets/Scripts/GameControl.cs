@@ -30,6 +30,7 @@ public class GameControl : MonoBehaviour {
 	void Update () {
         if (gameOver == true && Input.GetMouseButtonDown(0)) {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            Time.timeScale = 1;
         }
 		
 	}
@@ -43,6 +44,7 @@ public class GameControl : MonoBehaviour {
 
     }
     public void SquirrelDied() {
+        Time.timeScale = 0;
         gameOverText.SetActive(true);
         gameOver = true;
     }

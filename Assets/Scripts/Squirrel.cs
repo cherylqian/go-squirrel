@@ -8,6 +8,8 @@ public class Squirrel : MonoBehaviour {
 
     private Rigidbody2D rb2d;
     private bool isDead = false;
+    private float nextInputAllowed;
+    private float movementDuration = 1f;
     private Animator anim;
     public Collider2D[] colliders;
     private int currentColliderIndex = 0;
@@ -21,32 +23,19 @@ public class Squirrel : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (isDead == false) {
-            int count = 0;
-
-            if (Input.GetMouseButton(0))
+        if (isDead == false)
+        {
+            if (Input.GetMouseButtonDown(0) && !Pause.pause && Time.time >= nextInputAllowed)
             {
-                count = 1;
+                rb2d.velocity = new Vector2(GameControl.instance.scrollSpeed, 0);
+                anim.SetTrigger("Idle");
+                nextInputAllowed = Time.time + movementDuration;
+                return;
             }
             if (Input.GetMouseButtonUp(0))
             {
-                anim.SetTrigger("Walk");
                 rb2d.velocity = new Vector2(speed, 0);
-                count = 0;
-            }
-            if (Input.GetMouseButtonDown(0) && !Pause.pause)
-            {
-
-                anim.SetTrigger("Idle");
-                rb2d.velocity = new Vector2(GameControl.instance.scrollSpeed, 0);
-                count = 1;
-                return;
-
-            }
-
-            if (count != 1 && transform.position.x > 0)
-            {
-                rb2d.velocity = new Vector2(0, 0);
+                anim.SetTrigger("Walk");
             }
 
         }
@@ -61,6 +50,9 @@ public class Squirrel : MonoBehaviour {
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.tag == "middle") {
+            rb2d.velocity = new Vector2(0, 0);
+        } 
         if (collision.gameObject.tag == "road") {
             GameControl.instance.SquirrelScored();
         }
